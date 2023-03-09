@@ -105,7 +105,7 @@ const deleteemovie=(req,res)=>{
     
     movies.splice(index,1);
 
-    //fs.writeFileSync('./data/movies.json',JSON.stringify(movies),(err)=>{
+    fs.writeFileSync('./data/movies.json',JSON.stringify(movies),(err)=>{
     //200 fetched sucessfully
     res.status(204).json({
         status:"sucess",
@@ -113,7 +113,7 @@ const deleteemovie=(req,res)=>{
             movietodeleted:null
         }
     })
-//})
+})
 }
 
 
