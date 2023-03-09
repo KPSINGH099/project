@@ -1,0 +1,19 @@
+open folder in root location and type npm start to run the project
+
+git status
+
+git init
+
+make .gitignore file for node module
+
+git add .
+
+git commit -m"added post and patch request"
+
+
+ git init -b master
+
+
+git remote set-url origin https_link_to_repository
+
+git push -u origin master

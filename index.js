@@ -1,13 +1,16 @@
 const express = require('express');
 const url = require('url');
+const moviesRouter=require('./Routes/moviesRouter');
 //var express = require('express');
 var app = express();
 const fs=require('fs');
+//import morgon to check server response
+
 //const { request } = require('http');
-var PORT = 3000;
+
 
 ////step2****************api***************************/////
-let movies=JSON.parse(fs.readFileSync('./data/movies.json'));
+
 
 
 app.use(express.json());
@@ -18,112 +21,17 @@ app.use((req,res,next)=>{
     next();
 })
 
-
-//Route handeler function for api feth ,fetch all,create
-const getAllmovies=(req,res)=>{
-    res.status(200).json({
-        status:"sucescc",
-        count:movies.length,
-        data:{
-            movies:movies
-        }
-    })
+/*const logger=function(req,res,next){
+    console.log("custom middleware is called");
+    next();
 }
 
-const getmovie=(req,res)=>{
-    const id=req.params.id*1;
-
-    let movie=movies.find(el=>el.id===id);
-    
-    if(!movie){
-//404 data not found
-       return  res.status(404).json({
-            status:"fail",
-           message:'movie with ID ' +id+' does not exists'
-        })
-    }
-    //200 fetched sucessfully
-    res.status(201).json({
-        status:"sucess",
-     data:{
-            movie:movie
-        }
-    })
-}
-
-//this is bug we can not see response in postman but data being added in json file
-
-const createMovie=(req,res)=>{
-    console.log(req.body);
-
-    const newId=movies[movies.length - 1].id + 1;
-    const newMovie=Object.assign({id:newId},req.body);
-    movies.push(newMovie);
-    //fs.writeFileSync('./data/movies.json',JSON.stringify(movies),(err)=>{
-    res.status(201).json({
-        status:"sucesss",
-    //property defined in our custom middleware
-       data:{
-            movie:newMovie
-        }
-    })
-//})
-   
-};
-
-//without fs.writefilesync it is genrating response in postman
-//with fs.writefilesync it is working completitely fine in vscode also records are being added
-//into our movies.json file but giving error in postman 
-const updatemovie=(req,res)=>{
-    const id=req.params.id*1;
-
-    let movietoupdate=movies.find(el=>el.id===id);
-    
-    let index= movies.indexOf(movietoupdate);
-    
-    let output=Object.assign(movietoupdate,req.body);
-    
-    movies[index]=movietoupdate;
-
-    //fs.writeFileSync('./data/movies.json',JSON.stringify(movies),(err)=>{
-    //200 fetched sucessfully
-    res.status(200).json({
-        status:"sucess",
-     data:{
-            updatedmovie:output
-        }
-    })
-//})
-}
-
-const deleteemovie=(req,res)=>{
-    const id=req.params.id*1;
-
-    let movietodelete=movies.find(el=>el.id===id);
-    
-    let index= movies.indexOf(movietodelete);
-    
-    movies.splice(index,1);
-
-    fs.writeFileSync('./data/movies.json',JSON.stringify(movies),(err)=>{
-    //200 fetched sucessfully
-    res.status(204).json({
-        status:"sucess",
-     data:{
-            movietodeleted:null
-        }
-    })
-})
-}
+app.use(logger);*/
+////////////////////***********api use moviesRoute*************** */
+app.use('/api/v1/movies',moviesRouter);
 
 
 
-app.get('/api/v1/movies',getAllmovies);
-//name is optional here 
-app.get('/api/v1/movies/:id/:name?',getmovie);
-app.post('/api/v1/movies',createMovie);
-app.patch('/api/v1/movies/:id',updatemovie);
-app.delete('/api/v1/movies/:id',deleteemovie);
 
 //////////////////***********api done*************** */
 
@@ -172,7 +80,6 @@ app.get('/Home',getHome);
 app.get('/Products',getProduct);
 app.get('/Products/:id',getProduct);
 
-app.listen(PORT, function(err){
-	if (err) console.log(err);
-	console.log("Server listening on PORT", PORT);
-});
+
+
+module.exports=app;
