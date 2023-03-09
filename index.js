@@ -1,9 +1,9 @@
-const { response } = require('express');
+const express = require('express');
 const url = require('url');
-var express = require('express');
+//var express = require('express');
 var app = express();
 const fs=require('fs');
-const { request } = require('http');
+//const { request } = require('http');
 var PORT = 3000;
 
 ////step2****************api***************************/////
@@ -43,36 +43,88 @@ const getmovie=(req,res)=>{
         })
     }
     //200 fetched sucessfully
-    res.status(200).json({
-        status:"sucescc",
-    //property defined in our custom middleware
-        requestedAt:req.requestedAt,
-       data:{
+    res.status(201).json({
+        status:"sucess",
+     data:{
             movie:movie
         }
     })
 }
 
+//this is bug we can not see response in postman but data being added in json file
+
 const createMovie=(req,res)=>{
+    console.log(req.body);
+
     const newId=movies[movies.length - 1].id + 1;
     const newMovie=Object.assign({id:newId},req.body);
     movies.push(newMovie);
-
-    //201 we added new movie
-    fs.writeFileSync('./data/movies.json',JSON.stringify(movies),(err)=>{
-        console.log(err);
-        res.status(201).json({
-            status:"sucescc",
-            data:{
-                movies:newMovie
-            }
-        })
+    //fs.writeFileSync('./data/movies.json',JSON.stringify(movies),(err)=>{
+    res.status(201).json({
+        status:"sucesss",
+    //property defined in our custom middleware
+       data:{
+            movie:newMovie
+        }
     })
+//})
+   
+};
+
+//without fs.writefilesync it is genrating response in postman
+//with fs.writefilesync it is working completitely fine in vscode also records are being added
+//into our movies.json file but giving error in postman 
+const updatemovie=(req,res)=>{
+    const id=req.params.id*1;
+
+    let movietoupdate=movies.find(el=>el.id===id);
+    
+    let index= movies.indexOf(movietoupdate);
+    
+    let output=Object.assign(movietoupdate,req.body);
+    
+    movies[index]=movietoupdate;
+
+    //fs.writeFileSync('./data/movies.json',JSON.stringify(movies),(err)=>{
+    //200 fetched sucessfully
+    res.status(200).json({
+        status:"sucess",
+     data:{
+            updatedmovie:output
+        }
+    })
+//})
 }
 
+const deleteemovie=(req,res)=>{
+    const id=req.params.id*1;
+
+    let movietodelete=movies.find(el=>el.id===id);
+    
+    let index= movies.indexOf(movietodelete);
+    
+    movies.splice(index,1);
+
+    //fs.writeFileSync('./data/movies.json',JSON.stringify(movies),(err)=>{
+    //200 fetched sucessfully
+    res.status(204).json({
+        status:"sucess",
+     data:{
+            movietodeleted:null
+        }
+    })
+//})
+}
+
+
+
 app.get('/api/v1/movies',getAllmovies);
-app.get('/api/v1/movies/:id',getmovie);
+//name is optional here 
+app.get('/api/v1/movies/:id/:name?',getmovie);
 app.post('/api/v1/movies',createMovie);
+app.patch('/api/v1/movies/:id',updatemovie);
+app.delete('/api/v1/movies/:id',deleteemovie);
+
 //////////////////***********api done*************** */
 
 //////////////////step 1***********routing*************** */
